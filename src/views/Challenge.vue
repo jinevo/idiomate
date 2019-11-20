@@ -57,7 +57,11 @@ export default Vue.extend({
     this.recognition.continuous = true;
 
     this.recognition.onresult = event => {
-      const lastTranscription = [...event.results].pop()[0].transcript;
+      const lastSpeechResult = Array.from(event.results).pop();
+
+      if (!lastSpeechResult) return;
+
+      const lastTranscription = lastSpeechResult[0].transcript;
       this.transcriptions.push(lastTranscription);
 
       if (this.transcriptionMatched(lastTranscription)) {
@@ -79,8 +83,9 @@ export default Vue.extend({
       console.log("onaudioend");
     };
     this.recognition.onspeechend = event => {};
-    this.recognition.onerror = event => {
+    this.recognition.onerror = error => {
       this.audioActive = false;
+      console.log(error)
     };
     this.recognition.onnomatch = event => {
       this.audioActive = false;
