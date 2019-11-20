@@ -2,8 +2,8 @@
   <div class="home">
     <h1>Idiomate everywhere with anyone !</h1>
     <p>Who has the best international pronounciation ?</p>
-    <v-select label="Pick-up a language" :items="[{text: 'French', value: 'fr_FR'}]" />
-    <v-btn primary @click="play">Play</v-btn>
+    <v-select v-model="selectedLanguage" label="Pick-up a language" :items="[{text: 'French', value: 'fr_FR'}]" />
+    <v-btn :disabled="!selectedLanguage" primary @click="play">Play</v-btn>
   </div>
 </template>
 
@@ -21,6 +21,7 @@ export default Vue.extend({
   data: () => {
     return {
       text: "",
+      selectedLanguage: null,
       recognition: (null as unknown) as SpeechRecognition
     };
   },
@@ -42,7 +43,9 @@ export default Vue.extend({
   },
   methods: {
     play() {
-      this.$router.replace({ name: "challenge" });
+      this.$router.push({ name: "challenge", query: {
+        language: this.selectedLanguage
+      } });
     }
   }
 });
