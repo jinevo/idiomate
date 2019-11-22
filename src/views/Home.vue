@@ -1,52 +1,55 @@
 <template>
-  <div class="home">
-    <h1>Idiomate everywhere with anyone !</h1>
-    <p>Who has the best international pronounciation ?</p>
-    <v-select v-model="selectedLanguage" label="Pick-up a language" :items="[{text: 'French', value: 'fr_FR'}]" />
-    <v-btn :disabled="!selectedLanguage" primary @click="play">Play</v-btn>
-  </div>
+    <div class="home">
+        <h1>Idiomate everywhere with anyone !</h1>
+        <p>Who has the best international pronounciation ?</p>
+        <v-select
+            v-model="selectedLanguage"
+            label="Pick-up a language"
+            item-text="label"
+            item-value="locale"
+            :items="availableLanguages"
+        />
+        <v-btn :disabled="!selectedLanguage" primary @click="play">Play</v-btn>
+    </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import Language from '@/types/language';
+
+import Vue from 'vue';
+import { mapState } from 'vuex';
+
+import LANGUAGES from '@/constants/languages';
 
 declare global {
-  interface Window {
-    webkitSpeechRecognition: SpeechRecognition | undefined;
-  }
+    interface Window {
+        webkitSpeechRecognition: SpeechRecognition | undefined;
+    }
 }
 
 export default Vue.extend({
-  name: "home",
-  data: () => {
-    return {
-      text: "",
-      selectedLanguage: null,
-      recognition: (null as unknown) as SpeechRecognition
-    };
-  },
-  components: {
-    // HelloWorld
-  },
-  mounted() {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-    this.recognition = new SpeechRecognition();
-
-    this.recognition.interimResults = true;
-    this.recognition.lang = "es-PE";
-
-    this.recognition.onresult = event => {
-      this.text = event.results[0][0].transcript;
-      console.log(event.results[0][0].transcript);
-    };
-  },
-  methods: {
-    play() {
-      this.$router.push({ name: "challenge", query: {
-        language: this.selectedLanguage
-      } });
-    }
-  }
+    name: 'home',
+    data: () => {
+        return {
+            selectedLanguage: (null as unknown) as Language['locale'],
+        };
+    },
+    mounted() {
+        const SpeechRecognition =
+            window.SpeechRecognition || window.webkitSpeechRecognition;
+    },
+    methods: {
+        play() {
+            this.$router.push({
+                name: 'challenge',
+                query: {
+                    language: this.selectedLanguage,
+                },
+            });
+        },
+    },
+    computed: {
+        ...mapState(['availableLanguages']),
+    },
 });
 </script>
