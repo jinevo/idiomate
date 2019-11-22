@@ -11,7 +11,7 @@
             <v-chip
                 v-for="(transcript, index) of transcriptions"
                 :key="index"
-                :color="transcriptionMatched(transcript) ? 'green' : 'red'"
+                :color="hasTranscriptionMatched(transcript) ? 'green' : 'red'"
                 class="ma-2"
             >
                 {{ transcript }}
@@ -21,7 +21,11 @@
 </template>
 
 <script lang="ts">
+import Language from '@/types/language';
+
 import Vue from 'vue';
+
+import GRAMMARS from '@/constants/grammars';
 
 declare global {
     interface Window {
@@ -34,13 +38,6 @@ export default Vue.extend({
     data: () => {
         return {
             currentSentenceIndex: 0,
-            sentencesToMath: [
-                'Oui',
-                'Voiture',
-                'Je suis le meilleur',
-                'Je collectionne les papillons',
-                'Hier je suis allé voir un film au cinéma',
-            ],
             successSentences: [] as string[],
             transcriptions: [] as string[],
             audioActive: false,
@@ -56,7 +53,7 @@ export default Vue.extend({
         this.recognition = new SpeechRecognition();
 
         //this.recognition.interimResults = true;
-        this.recognition.lang = 'fr-FR';
+        this.recognition.lang = this.$route.query.language as string;
         this.recognition.continuous = true;
 
         this.recognition.onresult = event => {
@@ -67,7 +64,7 @@ export default Vue.extend({
             const lastTranscription = lastSpeechResult[0].transcript;
             this.transcriptions.push(lastTranscription);
 
-            if (this.transcriptionMatched(lastTranscription)) {
+            if (this.hasTranscriptionMatched(lastTranscription)) {
                 if (
                     this.currentSentenceIndex ===
                     this.sentencesToMath.length - 1
@@ -99,13 +96,23 @@ export default Vue.extend({
 
         this.recognition.start();
     },
+    computed: {
+        sentencesToMath(): string[] {
+            return (
+                GRAMMARS.get(
+                    (this.$route.query
+                        .language as unknown) as Language['locale']
+                ) ?? []
+            );
+        },
+    },
     methods: {
         startAudio() {
             this.recognition.start();
         },
-        transcriptionMatched(transcription: string): boolean {
+        hasTranscriptionMatched(transcription: string): boolean {
             return (
-                transcription.trim() ===
+                transcription.trim().toLowerCase() ===
                 this.sentencesToMath[this.currentSentenceIndex].toLowerCase()
             );
         },

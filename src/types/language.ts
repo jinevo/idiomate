@@ -1,4 +1,4 @@
 export default interface Language {
     label: string;
-    locale: 'fr_FR' | 'en_EN' | 'es_ES';
+    locale: 'fr-FR' | 'en-EN' | 'es-ES' | 'is-IS';
 }
