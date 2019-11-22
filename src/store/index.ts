@@ -15,7 +15,14 @@ export default new Vuex.Store({
             );
         }),
     },
-    mutations: {},
-    actions: {},
-    modules: {},
+    getters: {
+        isLocaleAvailable: state => (askedLocale: string): boolean => {
+            return (
+                !!askedLocale &&
+                state.availableLanguages.some(
+                    ({ locale }) => locale === askedLocale
+                )
+            );
+        },
+    },
 });

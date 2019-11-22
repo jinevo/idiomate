@@ -8,6 +8,7 @@
             item-text="label"
             item-value="locale"
             :items="availableLanguages"
+            return-object
         />
         <v-btn :disabled="!selectedLanguage" primary @click="play">Play</v-btn>
     </div>
@@ -31,7 +32,7 @@ export default Vue.extend({
     name: 'home',
     data: () => {
         return {
-            selectedLanguage: (null as unknown) as Language['locale'],
+            selectedLanguage: (null as unknown) as Language,
         };
     },
     mounted() {
@@ -43,7 +44,7 @@ export default Vue.extend({
             this.$router.push({
                 name: 'challenge',
                 query: {
-                    language: this.selectedLanguage,
+                    locale: this.selectedLanguage.locale,
                 },
             });
         },
