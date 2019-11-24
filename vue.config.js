@@ -8,4 +8,7 @@ module.exports = {
                 fix: true,
             });
     },
+    publicPath: process.env.NODE_ENV === 'production'
+    ? '/idiomate/'
+    : '/'
 };
