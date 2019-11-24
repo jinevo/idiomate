@@ -57,11 +57,5 @@ export default Vue.extend({
             type: Number,
         },
     },
-    data: () => {
-        return {
-            isCurrentSpeechFail: false,
-            currentAttemptsCount: 0,
-        };
-    },
 });
 </script>
