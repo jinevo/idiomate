@@ -3,34 +3,40 @@
         <v-flex class="flex-column justify-center align-center">
             <!-- <v-btn :disabled="isAudioActive" @click="startAudio">Put the mic on !</v-btn> -->
             <h1>
-                <v-icon>mid-microphone</v-icon>
-                Say
+                Just say the sentence the best as you can !
             </h1>
             <br />
             <v-card elevation="24" class="mx-auto">
                 <v-carousel
                     :continuous="false"
-                    :cycle="false"
                     :show-arrows="false"
-                    hide-delimiter-background
-                    delimiter-icon="mdi-minus"
+                    delimiter-icon="mdi-check"
                     height="300"
-                    :value="currentGrammerIndex"
+                    :value="currentGrammarIndex"
                 >
-                    <v-carousel-item v-for="(grammer, i) in grammars" :key="i">
+                    <v-carousel-item v-for="(grammar, i) in grammars" :key="i">
                         <v-sheet height="100%" tile>
                             <v-row
                                 class="fill-height"
                                 align="center"
                                 justify="center"
                             >
-                                <div class="display-3">{{ grammer }}</div>
+                                <div class="display-1 pa-6">
+                                    <div>
+                                        <v-icon>mdi-microphone</v-icon>
+                                        {{ grammar }}
+                                    </div>
+                                    <div
+                                        style="position: absolute;"
+                                        class="subtitle-1 red--text"
+                                    >
+                                        {{ currentSpeech || ' ' }}
+                                    </div>
+                                </div>
                             </v-row>
                         </v-sheet>
                     </v-carousel-item>
                 </v-carousel>
-
-                {{ currentSpeech }}
             </v-card>
         </v-flex>
     </div>
@@ -64,10 +70,9 @@ export default Vue.extend({
     data: () => {
         return {
             currentSpeech: '',
-            currentAttempts: 0,
-            currentGrammerIndex: 0,
-            successGrammers: [] as string[],
-            isAudioActive: false,
+            isCurrentSpeechFail: false,
+            currentAttemptsCount: 0,
+            currentGrammarIndex: 0,
             speechRecognition: (null as unknown) as SpeechRecognition,
         };
     },
@@ -83,77 +88,43 @@ export default Vue.extend({
         this.speechRecognition.maxAlternatives = 1;
 
         this.speechRecognition.onresult = event => {
-            console.log(event.results);
             // Extract the transcript of the speech
             const results = Array.from(event.results)
                 // Remove speech recongitions results from previous grammars
                 // Remove previous attempts
-                .slice(this.currentGrammerIndex + this.currentAttempts);
+                .slice(this.currentGrammarIndex + this.currentAttemptsCount);
 
-            // Display current speech to the user
+            // The current speech of the user
             this.currentSpeech = results
                 .map(result => result[0].transcript)
                 .join(' ');
 
-            // Check match if has at least of final result
+            // Check match if has at least one final result
             if (results.some(result => result.isFinal)) {
                 const transcript = results
                     .map(result => result[0].transcript)
                     .join(' ');
 
-                // Check if transcript matchs with the expected grammar
+                // If transcript matchs with the expected grammar
                 if (this.hasTranscriptionMatched(transcript)) {
                     // If all the grammars have been transcripted
-                    // stops the speech recognition
+                    // aborts the speech recognition
 
                     // If not
                     // Go the next grammar
 
-                    if (this.currentGrammerIndex === this.grammars.length - 1) {
-                        this.speechRecognition.stop();
+                    if (this.currentGrammarIndex === this.grammars.length - 1) {
+                        this.speechRecognition.abort();
                     } else {
-                        this.currentAttempts = 0;
-                        this.currentGrammerIndex++;
+                        this.currentAttemptsCount = 0;
+                        this.currentGrammarIndex++;
                     }
                 } else {
-                    this.currentAttempts++;
+                    this.currentAttemptsCount++;
                 }
+
+                this.currentSpeech = '';
             }
-        };
-
-        this.speechRecognition.onnomatch = event => {
-            this.isAudioActive = true;
-            console.log('no match');
-        };
-
-        this.speechRecognition.onaudiostart = event => {
-            this.isAudioActive = true;
-            console.log('onaudiostart');
-        };
-        this.speechRecognition.onaudioend = event => {
-            this.isAudioActive = false;
-            console.log('onaudioend');
-        };
-        this.speechRecognition.onsoundstart = event => {
-            this.isAudioActive = true;
-            console.log('onsoundstart');
-        };
-        this.speechRecognition.onsoundend = event => {
-            this.isAudioActive = false;
-            console.log('onsoundend');
-        };
-        this.speechRecognition.onspeechstart = event => {
-            console.log('onspeechstart');
-        };
-        this.speechRecognition.onspeechend = event => {
-            console.log('onspeechend');
-        };
-        this.speechRecognition.onerror = error => {
-            this.isAudioActive = false;
-            console.log(error);
-        };
-        this.speechRecognition.onnomatch = event => {
-            this.isAudioActive = false;
         };
 
         this.speechRecognition.start();
@@ -165,7 +136,7 @@ export default Vue.extend({
         hasTranscriptionMatched(transcription: string): boolean {
             return (
                 transcription.trim().toLowerCase() ===
-                this.grammars[this.currentGrammerIndex].toLowerCase()
+                this.grammars[this.currentGrammarIndex].toLowerCase()
             );
         },
     },
