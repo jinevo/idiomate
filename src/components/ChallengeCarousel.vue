@@ -24,7 +24,7 @@
                                     </div>
                                     <div
                                         style="position: absolute;"
-                                        class="subtitle-1 red--text"
+                                        class="speech-content subtitle-1 red--text"
                                     >
                                         {{ speech || ' ' }}
                                     </div>
