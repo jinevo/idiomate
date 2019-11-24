@@ -10,6 +10,12 @@ The App can be live testes on the URL demo : https://jinevo.github.io/idiomate/
 
 3 languages are available : French, English and Spanish. Other are coming !
 
+Other features to come :
+ - Account registration to save the results
+ - Battle between users
+ - UI improvments
+ - All devices support
+
 ## Project setup
 ```
 npm install
