@@ -3,11 +3,35 @@
         <div v-if="!isLocaleAvailable($route.query.locale)">
             You are trying to play with a language that is not available now !
         </div>
-        <SpeechRecognizer
-            v-else
-            :grammars="grammars"
-            :lang="$route.query.locale"
-        />
+        <div v-else>
+            <v-slide-x-transition mode="out-in">
+                <div v-if="!isLanguageDone" key="todo">
+                    <h1>
+                        Just say the sentence the best as you can !
+                    </h1>
+                    <SpeechRecognizer
+                        :grammars="grammars"
+                        :lang="$route.query.locale"
+                        @grammar:success="onGrammarSuccess"
+                        @speech="onSpeech"
+                        @language:done="onLanguageDone"
+                    />
+                    <ChallengeCarousel
+                        :speech="speech"
+                        :position="grammarSuccessPosition"
+                        :grammars="grammars"
+                    />
+                </div>
+                <div v-else key="done">
+                    <h1>
+                        Congratulations ! You have just completed the
+                        {{ languageLabel }} language !
+                    </h1>
+                    <h2>Try with an other language</h2>
+                    <ChallengeLauncher />
+                </div>
+            </v-slide-x-transition>
+        </div>
     </div>
 </template>
 
@@ -18,12 +42,25 @@ import Vue from 'vue';
 import { mapState, mapGetters } from 'vuex';
 
 import SpeechRecognizer from '@/components/SpeechRecognizer.vue';
+import ChallengeCarousel from '@/components/ChallengeCarousel.vue';
+import ChallengeLauncher from '@/components/ChallengeLauncher.vue';
 
 import GRAMMARS from '@/constants/grammars';
+import LANGUAGES from '@/constants/languages';
 
 export default Vue.extend({
     name: 'challenge',
+    data: () => {
+        return {
+            speech: '',
+            grammarSuccessPosition: 0,
+            isLanguageDone: false,
+        };
+    },
     components: {
+        ChallengeCarousel,
+        ChallengeLauncher,
+
         SpeechRecognizer,
     },
     computed: {
@@ -34,8 +71,26 @@ export default Vue.extend({
                 ) ?? []
             );
         },
+        languageLabel(): string {
+            return (LANGUAGES.find(
+                ({ locale }) => locale === this.$route.query.locale
+            ) as Language).label;
+        },
         ...mapState(['availableLanguages']),
         ...mapGetters(['isLocaleAvailable']),
+    },
+    methods: {
+        onGrammarSuccess(position: number): void {
+            this.grammarSuccessPosition = position;
+            this.speech = '';
+        },
+        onLanguageDone(): void {
+            console.log('DONNNNEE');
+            this.isLanguageDone = true;
+        },
+        onSpeech(speech: string): void {
+            this.speech = speech;
+        },
     },
 });
 </script>

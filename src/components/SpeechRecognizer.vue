@@ -1,46 +1,4 @@
-<template>
-    <div class="speech-recognizer">
-        <v-flex class="flex-column justify-center align-center">
-            <!-- <v-btn :disabled="isAudioActive" @click="startAudio">Put the mic on !</v-btn> -->
-            <h1>
-                Just say the sentence the best as you can !
-            </h1>
-            <br />
-            <v-card elevation="24" class="mx-auto">
-                <v-carousel
-                    :continuous="false"
-                    :show-arrows="false"
-                    delimiter-icon="mdi-check"
-                    height="300"
-                    :value="currentGrammarIndex"
-                >
-                    <v-carousel-item v-for="(grammar, i) in grammars" :key="i">
-                        <v-sheet height="100%" tile>
-                            <v-row
-                                class="fill-height"
-                                align="center"
-                                justify="center"
-                            >
-                                <div class="display-1 pa-6">
-                                    <div>
-                                        <v-icon>mdi-microphone</v-icon>
-                                        {{ grammar }}
-                                    </div>
-                                    <div
-                                        style="position: absolute;"
-                                        class="subtitle-1 red--text"
-                                    >
-                                        {{ currentSpeech || ' ' }}
-                                    </div>
-                                </div>
-                            </v-row>
-                        </v-sheet>
-                    </v-carousel-item>
-                </v-carousel>
-            </v-card>
-        </v-flex>
-    </div>
-</template>
+<template><div></div></template>
 
 <script lang="ts">
 import Language from '@/types/language';
@@ -69,7 +27,6 @@ export default Vue.extend({
     },
     data: () => {
         return {
-            currentSpeech: '',
             isCurrentSpeechFail: false,
             currentAttemptsCount: 0,
             currentGrammarIndex: 0,
@@ -95,9 +52,10 @@ export default Vue.extend({
                 .slice(this.currentGrammarIndex + this.currentAttemptsCount);
 
             // The current speech of the user
-            this.currentSpeech = results
+            const currentSpeech = results
                 .map(result => result[0].transcript)
                 .join(' ');
+            this.$emit('speech', currentSpeech);
 
             // Check match if has at least one final result
             if (results.some(result => result.isFinal)) {
@@ -115,24 +73,22 @@ export default Vue.extend({
 
                     if (this.currentGrammarIndex === this.grammars.length - 1) {
                         this.speechRecognition.abort();
+                        this.$emit('language:done');
                     } else {
                         this.currentAttemptsCount = 0;
-                        this.currentGrammarIndex++;
+                        ++this.currentGrammarIndex;
+
+                        this.$emit('grammar:success', this.currentGrammarIndex);
                     }
                 } else {
                     this.currentAttemptsCount++;
                 }
-
-                this.currentSpeech = '';
             }
         };
 
         this.speechRecognition.start();
     },
     methods: {
-        startAudio() {
-            this.speechRecognition.start();
-        },
         hasTranscriptionMatched(transcription: string): boolean {
             return (
                 transcription.trim().toLowerCase() ===
