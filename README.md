@@ -1,6 +1,6 @@
 # idiomate
 
-idiomate is an app built with VueJS and Typescript. The goal of the app is to offer a simple solution to test languages pronounciations or to challenge friend and family on their accent.
+idiomate is an app built with Vue, Vuetify, Vuex and Typescript. The goal of the app is to offer a simple solution to test languages pronounciations or to challenge friend and family on their accent.
 
 The app uses the SpeechRecognition Web API and is only available on Chrome Desktop and Chrome Android since Speech Recognition solutions on the cloud are limited and require paid plans to use it.
 
