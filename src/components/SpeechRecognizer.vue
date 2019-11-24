@@ -7,15 +7,31 @@
                 Say
             </h1>
             <br />
-            <strong>"{{ grammars[currentGrammerIndex] }}"</strong>
-            <v-chip
-                v-for="(transcript, index) of receivedTranscriptions"
-                :key="index"
-                :color="hasTranscriptionMatched(transcript) ? 'green' : 'red'"
-                class="ma-2"
-            >
-                {{ transcript }}
-            </v-chip>
+            <v-card elevation="24" class="mx-auto">
+                <v-carousel
+                    :continuous="false"
+                    :cycle="false"
+                    :show-arrows="false"
+                    hide-delimiter-background
+                    delimiter-icon="mdi-minus"
+                    height="300"
+                    :value="currentGrammerIndex"
+                >
+                    <v-carousel-item v-for="(grammer, i) in grammars" :key="i">
+                        <v-sheet height="100%" tile>
+                            <v-row
+                                class="fill-height"
+                                align="center"
+                                justify="center"
+                            >
+                                <div class="display-3">{{ grammer }}</div>
+                            </v-row>
+                        </v-sheet>
+                    </v-carousel-item>
+                </v-carousel>
+
+                {{ currentSpeech }}
+            </v-card>
         </v-flex>
     </div>
 </template>
@@ -47,9 +63,10 @@ export default Vue.extend({
     },
     data: () => {
         return {
+            currentSpeech: '',
+            currentAttempts: 0,
             currentGrammerIndex: 0,
             successGrammers: [] as string[],
-            receivedTranscriptions: [] as string[],
             isAudioActive: false,
             speechRecognition: (null as unknown) as SpeechRecognition,
         };
@@ -60,48 +77,77 @@ export default Vue.extend({
         this.speechRecognition = new SpeechRecognition();
 
         // Settings for speech recognition
+        this.speechRecognition.interimResults = true;
         this.speechRecognition.lang = this.lang;
         this.speechRecognition.continuous = true;
         this.speechRecognition.maxAlternatives = 1;
 
         this.speechRecognition.onresult = event => {
-            //Get last speech
-            const lastSpeechResult = Array.from(event.results).pop();
-
-            if (!lastSpeechResult) return;
-
+            console.log(event.results);
             // Extract the transcript of the speech
-            const lastTranscription = lastSpeechResult[0].transcript;
+            const results = Array.from(event.results)
+                // Remove speech recongitions results from previous grammars
+                // Remove previous attempts
+                .slice(this.currentGrammerIndex + this.currentAttempts);
 
-            // Add the transcription to the list
-            this.receivedTranscriptions.push(lastTranscription);
+            // Display current speech to the user
+            this.currentSpeech = results
+                .map(result => result[0].transcript)
+                .join(' ');
 
-            // Check if transcript matchs with the expected grammar
-            if (this.hasTranscriptionMatched(lastTranscription)) {
-                // If it is the very last one
-                // stops the speech recognition
+            // Check match if has at least of final result
+            if (results.some(result => result.isFinal)) {
+                const transcript = results
+                    .map(result => result[0].transcript)
+                    .join(' ');
 
-                // If not
-                // Go the next grammar
+                // Check if transcript matchs with the expected grammar
+                if (this.hasTranscriptionMatched(transcript)) {
+                    // If all the grammars have been transcripted
+                    // stops the speech recognition
 
-                if (this.currentGrammerIndex === this.grammars.length - 1) {
-                    this.speechRecognition.stop();
+                    // If not
+                    // Go the next grammar
+
+                    if (this.currentGrammerIndex === this.grammars.length - 1) {
+                        this.speechRecognition.stop();
+                    } else {
+                        this.currentAttempts = 0;
+                        this.currentGrammerIndex++;
+                    }
                 } else {
-                    this.successGrammers.push(lastTranscription);
-                    this.currentGrammerIndex++;
-                    this.receivedTranscriptions = [];
+                    this.currentAttempts++;
                 }
             }
         };
 
+        this.speechRecognition.onnomatch = event => {
+            this.isAudioActive = true;
+            console.log('no match');
+        };
+
         this.speechRecognition.onaudiostart = event => {
             this.isAudioActive = true;
+            console.log('onaudiostart');
         };
         this.speechRecognition.onaudioend = event => {
             this.isAudioActive = false;
             console.log('onaudioend');
         };
-        this.speechRecognition.onspeechend = event => {};
+        this.speechRecognition.onsoundstart = event => {
+            this.isAudioActive = true;
+            console.log('onsoundstart');
+        };
+        this.speechRecognition.onsoundend = event => {
+            this.isAudioActive = false;
+            console.log('onsoundend');
+        };
+        this.speechRecognition.onspeechstart = event => {
+            console.log('onspeechstart');
+        };
+        this.speechRecognition.onspeechend = event => {
+            console.log('onspeechend');
+        };
         this.speechRecognition.onerror = error => {
             this.isAudioActive = false;
             console.log(error);
