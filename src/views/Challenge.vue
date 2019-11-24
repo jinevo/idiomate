@@ -58,6 +58,11 @@ export default Vue.extend({
             isLanguageDone: false,
         };
     },
+    watch: {
+        $route(to, from) {
+            this.isLanguageDone = false;
+        },
+    },
     components: {
         ChallengeCarousel,
         ChallengeLauncher,
