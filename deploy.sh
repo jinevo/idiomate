@@ -9,6 +9,9 @@ npm run build
 # navigate into the build output directory
 cd dist
 
+# handle 404 page
+cp index.html 404.html
+
 # if you are deploying to a custom domain
 # echo 'www.example.com' > CNAME
 
@@ -20,6 +23,6 @@ git commit -m 'deploy'
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master
 
 # if you are deploying to https://<USERNAME>.github.io/<REPO>
-git push -f git@github.com:jinevo/idiomate.git master:gh-pages
+git push -f https://github.com/jinevo/idiomate.git master:gh-pages
 
 cd -

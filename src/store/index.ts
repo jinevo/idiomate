@@ -16,7 +16,9 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         hasDeviceSpeechRecognitionFeature:
-            typeof window.webkitSpeechRecognition === 'function',
+            typeof (
+                window.SpeechRecognition ?? window.webkitSpeechRecognition
+            ) === 'function',
         availableLanguages: LANGUAGES.filter(({ locale }) => {
             return (<Language['locale'][]>['en-EN', 'es-ES', 'fr-FR']).includes(
                 locale

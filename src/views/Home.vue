@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <h1>Idiomate everywhere with anyone !</h1>
-        <p>Who has the best international pronounciation ?</p>
+        <p>Test your international pronounciation ?</p>
         <ChallengeLauncher />
     </div>
 </template>

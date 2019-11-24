@@ -24,7 +24,8 @@
                 </div>
                 <div v-else key="done">
                     <h1>
-                        Congratulations ! You have just completed the
+                        <v-icon>mdi-check</v-icon>
+                        ! You have just completed the
                         {{ languageLabel }} language !
                     </h1>
                     <h2>Try with an other language</h2>
@@ -85,7 +86,6 @@ export default Vue.extend({
             this.speech = '';
         },
         onLanguageDone(): void {
-            console.log('DONNNNEE');
             this.isLanguageDone = true;
         },
         onSpeech(speech: string): void {

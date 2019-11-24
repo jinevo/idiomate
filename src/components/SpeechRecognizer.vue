@@ -86,6 +86,11 @@ export default Vue.extend({
             }
         };
 
+        // Temp fix for Android
+        this.speechRecognition.onend = event => {
+            this.speechRecognition.start();
+        }
+
         this.speechRecognition.start();
     },
     methods: {
