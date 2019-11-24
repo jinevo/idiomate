@@ -2,55 +2,19 @@
     <div class="home">
         <h1>Idiomate everywhere with anyone !</h1>
         <p>Who has the best international pronounciation ?</p>
-        <v-select
-            v-model="selectedLanguage"
-            label="Pick-up a language"
-            item-text="label"
-            item-value="locale"
-            :items="availableLanguages"
-            return-object
-        />
-        <v-btn :disabled="!selectedLanguage" primary @click="play">Play</v-btn>
+        <ChallengeLauncher />
     </div>
 </template>
 
 <script lang="ts">
-import Language from '@/types/language';
-
 import Vue from 'vue';
-import { mapState } from 'vuex';
 
-import LANGUAGES from '@/constants/languages';
-
-declare global {
-    interface Window {
-        webkitSpeechRecognition: SpeechRecognition | undefined;
-    }
-}
+import ChallengeLauncher from '@/components/ChallengeLauncher.vue';
 
 export default Vue.extend({
     name: 'home',
-    data: () => {
-        return {
-            selectedLanguage: (null as unknown) as Language,
-        };
-    },
-    mounted() {
-        const SpeechRecognition =
-            window.SpeechRecognition || window.webkitSpeechRecognition;
-    },
-    methods: {
-        play() {
-            this.$router.push({
-                name: 'challenge',
-                query: {
-                    locale: this.selectedLanguage.locale,
-                },
-            });
-        },
-    },
-    computed: {
-        ...mapState(['availableLanguages']),
+    components: {
+        ChallengeLauncher,
     },
 });
 </script>

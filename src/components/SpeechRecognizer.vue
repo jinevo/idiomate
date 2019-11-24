@@ -54,9 +54,6 @@ export default Vue.extend({
             speechRecognition: (null as unknown) as SpeechRecognition,
         };
     },
-    components: {
-        // HelloWorld
-    },
     mounted() {
         const SpeechRecognition =
             window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -65,6 +62,7 @@ export default Vue.extend({
         // Settings for speech recognition
         this.speechRecognition.lang = this.lang;
         this.speechRecognition.continuous = true;
+        this.speechRecognition.maxAlternatives = 1;
 
         this.speechRecognition.onresult = event => {
             //Get last speech
