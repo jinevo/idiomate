@@ -25,7 +25,7 @@ const routes = [
         name: 'unavailable',
         component: () =>
             import(
-                /* webpackChunkName: "challenge" */ '../views/Unavailable.vue'
+                /* webpackChunkName: "unavailable" */ '../views/Unavailable.vue'
             ),
     },
 ];
