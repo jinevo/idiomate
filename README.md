@@ -4,7 +4,7 @@ idiomate is an app built with Vue, Vuetify, Vuex and Typescript. The goal of the
 
 The app uses the SpeechRecognition Web API and is only available on Chrome Desktop and Chrome Android since Speech Recognition solutions on the cloud are limited and require paid plans to use it.
 
-! The Speech Recognition seems to work a bit differently on Android. So for now the app works only well in Chrome Desktop !
+*The Speech Recognition seems to work a bit differently on Android. So for now the app works only well in Chrome Desktop !*
 
 The App can be live testes on the URL demo : https://jinevo.github.io/idiomate/
 
