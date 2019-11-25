@@ -54,23 +54,23 @@ router.beforeEach(async (from, to, next) => {
         });
     }
 
-    const checkAudio = 'audio';
-    // Ensure permission to access audio is granted
-    if (
-        from.name !== routeUnavailableName &&
-        from.query.reason !== checkAudio
-    ) {
-        try {
-            await navigator.mediaDevices.getUserMedia({ audio: true });
-        } catch (e) {
-            return next({
-                name: routeUnavailableName,
-                query: {
-                    reason: checkAudio,
-                },
-            });
-        }
-    }
+    // const checkAudio = 'audio';
+    // // Ensure permission to access audio is granted
+    // if (
+    //     from.name !== routeUnavailableName &&
+    //     from.query.reason !== checkAudio
+    // ) {
+    //     try {
+    //         await navigator.mediaDevices.getUserMedia({ audio: true });
+    //     } catch (e) {
+    //         return next({
+    //             name: routeUnavailableName,
+    //             query: {
+    //                 reason: checkAudio,
+    //             },
+    //         });
+    //     }
+    // }
 
     next();
 });
