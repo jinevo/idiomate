@@ -59,3 +59,9 @@ export default Vue.extend({
     },
 });
 </script>
+
+<style lang="css">
+.v-carousel__controls {
+    pointer-events: none;
+}
+</style>
