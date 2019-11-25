@@ -87,8 +87,19 @@ export default Vue.extend({
         };
 
         // Temp fix for Android
-        this.speechRecognition.onend = event => {
-            this.speechRecognition.start();
+        // this.speechRecognition.onend = event => {
+        //     this.speechRecognition.start();
+        // };
+
+        this.speechRecognition.onerror = (error: any) => {
+            if (error?.error === 'not-allowed') {
+                this.$router.push({
+                    name: 'unavailable',
+                    query: {
+                        reason: 'audio',
+                    },
+                });
+            }
         };
 
         this.speechRecognition.start();
