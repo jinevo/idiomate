@@ -14,7 +14,7 @@
                                 color="blue"
                                 text-color="white"
                             >
-                                beta
+                                beta v0.013
                             </v-chip>
                         </router-link>
                     </v-col>
