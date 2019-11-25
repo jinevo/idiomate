@@ -60,7 +60,10 @@ export default Vue.extend({
     },
     watch: {
         $route(to, from) {
+            // Rest if new language is asked
             this.isLanguageDone = false;
+            this.speech = '';
+            this.grammarSuccessPosition = 0;
         },
     },
     components: {
